@@ -1,0 +1,2085 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Analítico Julio vs Agosto</title>
+    <meta
+      name="description"
+      content="Dashboard interactivo y modo presentación para análisis comparativo de clientes en USD, Guías y Kilogramos entre Julio y Agosto con diagnóstico de caídas y comportamiento semanal."
+    />
+    <meta property="og:title" content="Dashboard Analítico Julio vs Agosto" />
+    <meta
+      property="og:description"
+      content="Dashboard interactivo y modo presentación para análisis comparativo de clientes en USD, Guías y Kilogramos entre Julio y Agosto con diagnóstico de caídas y comportamiento semanal."
+    />
+
+    <!-- Tipografía Oficial Corporativa: Plus Jakarta Sans y JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            gridTemplateColumns: {
+              7: "repeat(7, minmax(0, 1fr))",
+            },
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', "sans-serif"],
+              mono: ['"JetBrains Mono"', "monospace"],
+            },
+            colors: {
+              tealca: {
+                blue: "#0061A8",
+                mustard: "#E8B43B",
+                darkBlue: "#004C84",
+                lightBlue: "#E6F0F8",
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Lucide Icons Vanilla CDN (Mismos iconos vectoriales exactos de lucide-react) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js CDN para gráficos idénticos con curvas suaves, áreas y barras agrupadas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Hoja de Estilos Corporativos Independiente -->
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body
+    class="bg-[#F8FAFC] text-slate-800 antialiased min-h-screen flex flex-col font-['Plus_Jakarta_Sans',sans-serif]"
+  >
+    <!-- Cintillo corporativo oficial TEALCA -->
+    <div
+      class="h-1.5 w-full bg-gradient-to-r from-[#0061A8] via-[#E8B43B] to-[#0061A8]"
+    ></div>
+
+    <!-- Header Superior -->
+    <header
+      class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+        <div
+          class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
+        >
+          <!-- Logo Corporativo Águila Azul TEALCA y Título Principal -->
+          <div class="flex items-center gap-3.5">
+            <div
+              class="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-xs border border-slate-200 p-1 shrink-0 overflow-hidden"
+              title="Logo Corporativo TEALCA • Águila Azul"
+            >
+              <img
+                src="assets/images/tealca_eagle_logo.png"
+                alt="Logo Corporativo TEALCA Águila Azul"
+                class="w-full h-full object-contain rounded-lg"
+              />
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span
+                  class="text-xs font-bold uppercase tracking-wider text-[#0061A8] bg-[#E6F0F8] px-2 py-0.5 rounded-md"
+                >
+                  Reporte Gerencial
+                </span>
+                <span class="text-xs font-medium text-slate-500"
+                  >Julio vs Agosto 2026</span
+                >
+                <span
+                  id="header-variance-badge"
+                  class="text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 bg-red-50 text-[#DC2626]"
+                >
+                  <i
+                    data-lucide="trending-down"
+                    class="w-3 h-3 text-[#DC2626]"
+                  ></i>
+                  <span id="header-variance-text">-15.1% vs Julio</span>
+                </span>
+              </div>
+              <h1
+                class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2 mt-0.5"
+              >
+                Diagnóstico de Movimientos
+                <span
+                  class="text-sm font-semibold text-[#0061A8] hidden md:inline"
+                >
+                  (Días, Semanas y Mes a Mes)
+                </span>
+              </h1>
+            </div>
+          </div>
+
+          <!-- Filtros dinámicos y controles interactivos -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            <!-- Selector de Cliente -->
+            <div class="relative min-w-[200px] flex-1 sm:flex-initial">
+              <label for="client-select" class="sr-only"
+                >Seleccionar Cliente</label
+              >
+              <select
+                id="client-select"
+                onchange="setClient(this.value)"
+                class="w-full bg-slate-50 hover:bg-white text-slate-800 text-sm font-semibold rounded-lg border border-slate-300 focus:border-[#0061A8] focus:ring-2 focus:ring-[#0061A8]/20 px-3 py-2 cursor-pointer transition-colors shadow-xs"
+              >
+                <option value="TODOS">
+                  🌐 Todos los Clientes (Consolidado)
+                </option>
+                <option value="Biopago C.A.">🏢 Biopago C.A.</option>
+                <option value="ESTEFANY REINOSO">🏢 ESTEFANY REINOSO</option>
+                <option value="BARPEL C.A">🏢 BARPEL C.A</option>
+                <option value="TODO TRACTOR C.A.">🏢 TODO TRACTOR C.A.</option>
+              </select>
+            </div>
+
+            <!-- Selector de Métrica Clave (USD, Guías, Kg) -->
+            <div
+              id="metric-tabs"
+              class="inline-flex bg-slate-100 p-1 rounded-lg border border-slate-200"
+            >
+              <button
+                id="btn-usd"
+                type="button"
+                onclick="setMetric('usd')"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all bg-[#0061A8] text-white shadow-xs cursor-pointer"
+              >
+                <i data-lucide="dollar-sign" class="w-3.5 h-3.5"></i>
+                <span>USD ($)</span>
+              </button>
+              <button
+                id="btn-guias"
+                type="button"
+                onclick="setMetric('guias')"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 cursor-pointer"
+              >
+                <i data-lucide="package" class="w-3.5 h-3.5"></i>
+                <span>Guías</span>
+              </button>
+              <button
+                id="btn-kg"
+                type="button"
+                onclick="setMetric('kg')"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 cursor-pointer"
+              >
+                <i data-lucide="scale" class="w-3.5 h-3.5"></i>
+                <span>Kg</span>
+              </button>
+            </div>
+
+            <!-- Alternador de Modo: Dashboard vs Modo Presentación PPT -->
+            <div
+              class="inline-flex bg-amber-50 p-1 rounded-lg border border-[#E8B43B]/40"
+            >
+              <button
+                id="btn-mode-dashboard"
+                type="button"
+                onclick="closePresentation()"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all bg-[#0061A8] text-white shadow-xs cursor-pointer"
+              >
+                <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline">Dashboard</span>
+              </button>
+              <button
+                id="btn-mode-presentation"
+                type="button"
+                onclick="togglePresentation()"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all text-amber-900 hover:text-slate-950 cursor-pointer"
+                title="Modo pantalla completa para proyectar presentación ejecutiva interactiva"
+              >
+                <i data-lucide="tv-2" class="w-3.5 h-3.5 text-[#0061A8]"></i>
+                <span>Modo Proyección PPT</span>
+              </button>
+            </div>
+
+            <!-- Control de Bloqueo y Desbloqueo (Eduardo.oso / 20870092) -->
+            <div id="auth-status-container" class="flex items-center">
+              <button
+                id="btn-auth-toggle"
+                type="button"
+                onclick="handleAuthClick()"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold transition-all cursor-pointer shadow-2xs"
+                title="Proyecto Bloqueado. Haz clic para desbloquear con Eduardo.oso"
+              >
+                <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span class="hidden sm:inline">Bloqueado</span>
+                <span
+                  class="text-3xs font-black text-[#0061A8] bg-white px-1.5 py-0.5 rounded-md border border-slate-200"
+                >
+                  Desbloquear
+                </span>
+              </button>
+            </div>
+
+            <!-- Acciones Adicionales (Tabla de datos, Importar, Pantalla completa) -->
+            <div class="flex items-center gap-1.5">
+              <button
+                id="btn-open-table"
+                type="button"
+                onclick="openTableModal()"
+                class="p-2 text-slate-600 hover:text-[#0061A8] hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+                title="Ver tabla detallada de movimientos"
+              >
+                <i data-lucide="table" class="w-4 h-4"></i>
+              </button>
+              <button
+                id="btn-open-importer"
+                type="button"
+                onclick="openImporterModal()"
+                class="p-2 text-slate-600 hover:text-[#0061A8] hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+                title="Actualizar o importar datos"
+              >
+                <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+              </button>
+              <button
+                id="btn-toggle-fullscreen"
+                type="button"
+                onclick="toggleFullscreen()"
+                class="p-2 text-slate-600 hover:text-[#0061A8] hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+                title="Pantalla completa"
+              >
+                <i data-lucide="maximize-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <!-- Sello Personal: Eduardo.oso (Extremo Superior Derecho) -->
+            <div
+              class="flex items-center gap-2 pl-2 border-l border-slate-200"
+              title="Sello Personal de Autoría y Diagnóstico: Eduardo.oso"
+            >
+              <div
+                class="w-11 h-11 rounded-xl bg-white p-1 flex items-center justify-center shadow-xs border border-[#E8B43B]/60 shrink-0 overflow-hidden"
+              >
+                <img
+                  src="assets/images/eduardo_oso_seal.png"
+                  alt="Sello Personal Eduardo.oso"
+                  class="w-full h-full object-contain rounded-lg"
+                />
+              </div>
+              <div class="hidden xl:flex flex-col text-left">
+                <span
+                  class="text-3xs font-black uppercase tracking-wider text-amber-900 bg-amber-100/70 px-1.5 py-0.5 rounded leading-none w-fit border border-amber-200/60"
+                >
+                  Sello Personal
+                </span>
+                <span
+                  class="text-xs font-black text-slate-800 leading-tight mt-0.5"
+                >
+                  Eduardo.oso
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Contenido Central -->
+    <main
+      class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6"
+    >
+      <!-- Banner de Contexto de Cliente (VISTA SELECCIONADA) -->
+      <div
+        class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            id="client-avatar-badge"
+            class="w-10 h-10 rounded-xl bg-[#0061A8] flex items-center justify-center text-white shadow-xs shrink-0"
+          >
+            <i data-lucide="globe" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <span
+              class="text-3xs font-black uppercase tracking-widest text-[#0061A8]"
+            >
+              Vista Seleccionada
+            </span>
+            <h2
+              id="client-title"
+              class="text-lg sm:text-xl font-black text-slate-900 tracking-tight"
+            >
+              Consolidado General de Todos los Clientes
+            </h2>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold text-slate-500"
+            >Métrica Visualizada:</span
+          >
+          <span
+            id="metric-badge"
+            class="text-xs font-black px-2.5 py-1 rounded-lg bg-[#E6F0F8] text-[#0061A8] border border-[#7FB0D4]"
+          >
+            Dólares ($ USD)
+          </span>
+        </div>
+      </div>
+
+      <!-- 3. Indicadores Ejecutivos (KPIs) -->
+      <div
+        id="kpis-container"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 sm:gap-3"
+      ></div>
+
+      <!-- 4. Sección de Gráficos Circulares Semanales (Donuts) -->
+      <div
+        class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs"
+      >
+        <div
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-100"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#E8B43B]"></span>
+              <h2
+                class="text-lg sm:text-xl font-black text-slate-900 tracking-tight"
+              >
+                Comportamiento Semanal de la Demanda: Julio vs Agosto
+              </h2>
+            </div>
+            <p
+              id="donut-section-subtitle"
+              class="text-xs sm:text-sm text-slate-500 mt-1"
+            >
+              Análisis visual de concentración y desfase por semanas (<strong
+                id="donut-metric-label"
+                class="text-slate-700"
+                >Dólares USD</strong
+              >). Gráfico réplica del modelo de presentación ejecutiva.
+            </p>
+          </div>
+
+          <div
+            class="flex items-center gap-3 text-2xs font-bold shrink-0 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200"
+          >
+            <span class="flex items-center gap-1 text-[#0061A8]">
+              <span class="w-2 h-2 rounded-full bg-[#0061A8]"></span>
+              Crecimiento / Positivo (Azul)
+            </span>
+            <span class="flex items-center gap-1 text-[#DC2626]">
+              <span class="w-2 h-2 rounded-full bg-[#DC2626]"></span>
+              Caída / Negativo (Rojo)
+            </span>
+          </div>
+        </div>
+
+        <!-- Donuts Lado a Lado -->
+        <div
+          class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-center"
+        >
+          <!-- Donut Julio -->
+          <div
+            id="donut-julio-container"
+            class="border border-[#0061A8]/30 rounded-2xl p-5 bg-gradient-to-b from-blue-50/40 to-white relative shadow-xs"
+          >
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <div class="flex items-center gap-2">
+                <span
+                  class="px-2 py-0.5 rounded text-xs font-black bg-[#0061A8] text-white"
+                  >JULIO</span
+                >
+                <h3 class="text-sm font-bold text-slate-800">
+                  Comportamiento Julio (Equilibrado)
+                </h3>
+              </div>
+              <span
+                id="donut-julio-total-badge"
+                class="text-xs font-semibold text-slate-500"
+              ></span>
+            </div>
+            <div
+              class="flex flex-col items-center justify-center relative my-2"
+            >
+              <svg
+                id="donut-julio"
+                class="w-full max-w-[280px] h-auto transition-transform"
+                viewBox="0 0 320 320"
+              ></svg>
+              <div
+                id="callout-julio"
+                class="w-full mt-4 bg-blue-50/80 border border-[#0061A8]/20 rounded-xl p-3 text-xs text-slate-700 relative"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Donut Agosto -->
+          <div
+            id="donut-agosto-container"
+            class="border border-[#E8B43B]/60 rounded-2xl p-5 bg-gradient-to-b from-amber-50/40 to-white relative shadow-xs"
+          >
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <div class="flex items-center gap-2">
+                <span
+                  class="px-2 py-0.5 rounded text-xs font-black bg-[#E8B43B] text-slate-950"
+                  >AGOSTO</span
+                >
+                <h3 class="text-sm font-bold text-slate-800">
+                  Comportamiento Agosto (Desfase Extremo)
+                </h3>
+              </div>
+              <span
+                id="donut-agosto-total-badge"
+                class="text-xs font-semibold text-slate-500"
+              ></span>
+            </div>
+            <div
+              class="flex flex-col items-center justify-center relative my-2"
+            >
+              <svg
+                id="donut-agosto"
+                class="w-full max-w-[280px] h-auto transition-transform"
+                viewBox="0 0 320 320"
+              ></svg>
+              <div
+                id="callout-agosto"
+                class="w-full mt-4 bg-amber-50/90 border border-[#E8B43B]/40 rounded-xl p-3 text-xs text-slate-800 relative"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjetas de Semanas 1 a 6 -->
+        <div class="mt-8 pt-6 border-t border-slate-200">
+          <h4
+            class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 flex items-center justify-between"
+          >
+            <span>Desglose Semana a Semana: Diagnóstico de Éxito / Caída</span>
+            <span class="text-3xs font-normal lowercase text-slate-400"
+              >*Pasa el cursor sobre cada semana para resaltarla en los gráficos
+              circulares</span
+            >
+          </h4>
+          <div
+            id="weeks-grid"
+            class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3"
+          ></div>
+        </div>
+      </div>
+
+      <!-- 5. Comparativa Semanal en Barras & Diagnóstico Diario (Dos Columnas Idénticas a React) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Columna 1: WeeklyBarComparison -->
+        <div
+          class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs flex flex-col justify-between"
+        >
+          <div>
+            <div
+              class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6"
+            >
+              <div>
+                <h3
+                  class="text-base sm:text-lg font-black text-slate-900 tracking-tight flex items-center gap-2"
+                >
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#0061A8]"></span>
+                  Comparativa Directa por Semanas (Julio vs Agosto)
+                </h3>
+                <p
+                  id="bar-chart-subtitle"
+                  class="text-xs text-slate-500 mt-0.5"
+                >
+                  Evolución semanal en
+                  <strong class="text-slate-700">Dólares ($ USD)</strong>
+                </p>
+              </div>
+              <!-- Leyenda corporativa -->
+              <div class="flex items-center gap-4 text-xs font-bold">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-3 h-3 rounded-xs bg-[#0061A8]"></span>
+                  <span class="text-slate-700">Julio 2026</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-3 h-3 rounded-xs bg-[#E8B43B]"></span>
+                  <span class="text-slate-700">Agosto 2026</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Canvas del Gráfico de Barras -->
+            <div class="h-[280px] w-full relative">
+              <canvas id="weekly-bar-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna 2: DailyTrendsChart -->
+        <div
+          class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs flex flex-col justify-between"
+        >
+          <div>
+            <div
+              class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6"
+            >
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#0061A8]"></span>
+                  <h3
+                    class="text-base sm:text-lg font-black text-slate-900 tracking-tight"
+                  >
+                    Curva de Movimientos Diarios: Día a Día (1 al 31)
+                  </h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                  Detección de puntos de quiebre, valles de inactividad y picos
+                  de despacho
+                </p>
+              </div>
+
+              <button
+                id="btn-toggle-daily-table"
+                type="button"
+                onclick="toggleDailyTable()"
+                class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0061A8] bg-[#E6F0F8] hover:bg-[#D3E5F4] px-3 py-1.5 rounded-lg border border-[#7FB0D4] transition-colors self-start sm:self-auto cursor-pointer"
+              >
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                <span id="label-toggle-daily-table"
+                  >Ver Desglose Día 1..31</span
+                >
+                <i
+                  id="icon-toggle-daily-table"
+                  data-lucide="chevron-down"
+                  class="w-3.5 h-3.5"
+                ></i>
+              </button>
+            </div>
+
+            <!-- Canvas del Gráfico de Área Diaria -->
+            <div class="h-[290px] w-full relative">
+              <canvas id="daily-area-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Píldoras de Diagnóstico Rápido: Peores y Mejores Días -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-100"
+          >
+            <!-- Mayor Caída -->
+            <div class="bg-red-50/60 border border-red-200 rounded-xl p-3">
+              <div
+                class="flex items-center gap-1.5 text-xs font-bold text-[#DC2626] mb-2"
+              >
+                <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
+                <span>Mayor Impacto Negativo (Días con mayor caída):</span>
+              </div>
+              <div id="worst-days-container" class="space-y-1.5"></div>
+            </div>
+
+            <!-- Mayor Repunte -->
+            <div
+              class="bg-emerald-50/60 border border-emerald-200 rounded-xl p-3"
+            >
+              <div
+                class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 mb-2"
+              >
+                <i
+                  data-lucide="arrow-up-right"
+                  class="w-4 h-4 text-emerald-600"
+                ></i>
+                <span>Mayor Desempeño Positivo (Superaron a Julio):</span>
+              </div>
+              <div id="best-days-container" class="space-y-1.5"></div>
+            </div>
+          </div>
+
+          <!-- Tabla Desplegable Día 1..31 -->
+          <div
+            id="daily-table-wrapper"
+            class="hidden mt-4 pt-4 border-t border-slate-200"
+          >
+            <div
+              class="max-h-60 overflow-y-auto rounded-xl border border-slate-200"
+            >
+              <table class="w-full text-left text-xs">
+                <thead
+                  class="bg-slate-100 text-slate-700 font-bold sticky top-0"
+                >
+                  <tr>
+                    <th class="px-3 py-2">Día</th>
+                    <th class="px-3 py-2 text-right">Julio 2026</th>
+                    <th class="px-3 py-2 text-right">Agosto 2026</th>
+                    <th class="px-3 py-2 text-right">Diferencia</th>
+                    <th class="px-3 py-2 text-right">Estado</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="daily-table-body"
+                  class="divide-y divide-slate-100"
+                ></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner si la sección de Factores Externos está oculta -->
+      <div
+        id="banner-hidden-external-factors"
+        class="hidden bg-slate-50 border border-dashed border-slate-300 rounded-2xl p-4 text-center"
+      >
+        <div
+          class="flex items-center justify-center gap-2 text-xs font-bold text-slate-600"
+        >
+          <i data-lucide="eye-off" class="w-4 h-4 text-slate-400"></i>
+          <span
+            >Sección "Factores Externos y Contexto de Mercado" actualmente
+            oculta por el usuario.</span
+          >
+          <button
+            onclick="toggleExternalFactorsVisibility()"
+            class="ml-2 px-2.5 py-1 rounded-lg bg-white border border-slate-300 text-[#0061A8] hover:bg-slate-100 font-black cursor-pointer"
+          >
+            Restaurar Sección
+          </button>
+        </div>
+      </div>
+
+      <!-- 6A. SECCIÓN INDEPENDIENTE: Factores Externos y Contexto de Mercado Correlacionados -->
+      <div
+        id="section-external-factors"
+        class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-5 transition-all"
+      >
+        <div
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-2xl bg-[#0061A8] flex items-center justify-center text-[#E8B43B] font-black shadow-xs shrink-0"
+            >
+              <i data-lucide="calendar" class="w-5 h-5 text-[#E8B43B]"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span
+                  class="text-3xs font-black uppercase tracking-wider text-[#0061A8] bg-[#E6F0F8] px-2 py-0.5 rounded-md"
+                >
+                  Sección 1 de Diagnóstico
+                </span>
+                <span
+                  id="external-factors-count"
+                  class="text-xs font-semibold text-slate-500"
+                  >Factores de entorno</span
+                >
+              </div>
+              <h2
+                class="text-lg sm:text-xl font-black text-slate-900 tracking-tight mt-0.5"
+              >
+                Factores Externos y Contexto de Mercado Correlacionados
+              </h2>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 self-end sm:self-auto">
+            <button
+              id="btn-toggle-hidden-factors"
+              onclick="toggleShowHiddenFactors()"
+              class="hidden inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all cursor-pointer"
+            >
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+              <span id="label-toggle-hidden-factors">Ver Irrelevantes</span>
+            </button>
+            <button
+              id="btn-add-external-factor"
+              onclick="openAddEventModal()"
+              class="hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0061A8] hover:bg-[#004C84] text-white font-extrabold text-xs shadow-2xs transition-all cursor-pointer"
+            >
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>Asociar Factor</span>
+            </button>
+            <button
+              id="btn-toggle-external-factors"
+              onclick="toggleExternalFactorsVisibility()"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all cursor-pointer"
+            >
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+              <span>Ocultar Sección</span>
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="flex flex-wrap items-center justify-between gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs"
+        >
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-3xs font-black uppercase text-slate-500 mr-1"
+              >Filtrar:</span
+            >
+            <button
+              onclick="filterRcaCategory('ALL')"
+              class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold hover:border-[#0061A8] cursor-pointer"
+            >
+              Todos
+            </button>
+            <button
+              onclick="filterRcaCategory('externo')"
+              class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold hover:border-[#0061A8] cursor-pointer"
+            >
+              Externos
+            </button>
+            <button
+              onclick="filterRcaCategory('operativo')"
+              class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold hover:border-[#0061A8] cursor-pointer"
+            >
+              Operativos
+            </button>
+            <button
+              onclick="filterRcaCategory('comercial')"
+              class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold hover:border-[#0061A8] cursor-pointer"
+            >
+              Comerciales
+            </button>
+            <button
+              onclick="filterRcaCategory('cliente')"
+              class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold hover:border-[#0061A8] cursor-pointer"
+            >
+              Cliente
+            </button>
+          </div>
+          <div
+            id="external-edit-indicator"
+            class="hidden text-3xs font-bold text-[#0061A8] bg-[#E6F0F8] px-2 py-0.5 rounded-md"
+          >
+            Modo edición activo para Eduardo.oso
+          </div>
+        </div>
+
+        <div
+          id="rca-events-grid"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5"
+        ></div>
+      </div>
+
+      <!-- Banner si la sección de Hipótesis Cuantitativas está oculta -->
+      <div
+        id="banner-hidden-hypotheses"
+        class="hidden bg-slate-50 border border-dashed border-slate-300 rounded-2xl p-4 text-center"
+      >
+        <div
+          class="flex items-center justify-center gap-2 text-xs font-bold text-slate-600"
+        >
+          <i data-lucide="eye-off" class="w-4 h-4 text-slate-400"></i>
+          <span
+            >Sección "Hipótesis Cuantitativas y Árbol Causal (5 Porqués)"
+            actualmente oculta por el usuario.</span
+          >
+          <button
+            onclick="toggleHypothesesVisibility()"
+            class="ml-2 px-2.5 py-1 rounded-lg bg-white border border-slate-300 text-[#0061A8] hover:bg-slate-100 font-black cursor-pointer"
+          >
+            Restaurar Sección
+          </button>
+        </div>
+      </div>
+
+      <!-- 6B. SECCIÓN INDEPENDIENTE: Hipótesis Cuantitativas y Árbol Causal (5 Porqués) -->
+      <div
+        id="section-quantitative-hypotheses"
+        class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-5 transition-all"
+      >
+        <div
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-2xl bg-[#0061A8] flex items-center justify-center text-[#E8B43B] font-black shadow-xs shrink-0"
+            >
+              <i data-lucide="split" class="w-5 h-5 text-[#E8B43B]"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span
+                  class="text-3xs font-black uppercase tracking-wider text-[#0061A8] bg-[#E6F0F8] px-2 py-0.5 rounded-md"
+                >
+                  Sección 2 de Diagnóstico
+                </span>
+                <span class="text-xs font-semibold text-slate-500"
+                  >Metodología Lean / 5 Porqués</span
+                >
+              </div>
+              <h2
+                class="text-lg sm:text-xl font-black text-slate-900 tracking-tight mt-0.5"
+              >
+                Hipótesis Cuantitativas y Árbol Causal (5 Porqués)
+              </h2>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 self-end sm:self-auto">
+            <button
+              id="btn-toggle-hidden-hypotheses"
+              onclick="toggleShowHiddenHypotheses()"
+              class="hidden inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all cursor-pointer"
+            >
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+              <span id="label-toggle-hidden-hypotheses">Ver Irrelevantes</span>
+            </button>
+            <button
+              id="btn-toggle-hypotheses"
+              onclick="toggleHypothesesVisibility()"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all cursor-pointer"
+            >
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+              <span>Ocultar Sección</span>
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="flex flex-wrap items-center justify-between gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs"
+        >
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-3xs font-black uppercase text-slate-500 mr-1"
+              >Filtrar Hipótesis:</span
+            >
+            <button
+              onclick="filterRcaTrend('ALL')"
+              class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-bold hover:border-[#0061A8] cursor-pointer"
+            >
+              Todas
+            </button>
+            <button
+              onclick="filterRcaTrend('caida')"
+              class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[#DC2626] font-bold hover:border-[#DC2626] cursor-pointer"
+            >
+              Factores de Caída
+            </button>
+            <button
+              onclick="filterRcaTrend('aumento')"
+              class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[#0061A8] font-bold hover:border-[#0061A8] cursor-pointer"
+            >
+              Factores de Aumento
+            </button>
+          </div>
+          <div
+            id="hyp-edit-indicator"
+            class="hidden text-3xs font-bold text-[#0061A8] bg-[#E6F0F8] px-2 py-0.5 rounded-md"
+          >
+            Modo edición activo para Eduardo.oso
+          </div>
+        </div>
+
+        <div id="rca-hypotheses-list" class="space-y-3.5"></div>
+      </div>
+
+      <!-- Banner si la sección de Diagnóstico Estratégico está oculta -->
+      <div
+        id="banner-hidden-strategic"
+        class="hidden bg-slate-50 border border-dashed border-slate-300 rounded-2xl p-4 text-center shadow-2xs"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center gap-2 text-xs font-bold text-slate-600"
+        >
+          <div class="flex items-center gap-2">
+            <i data-lucide="eye-off" class="w-4 h-4 text-slate-400"></i>
+            <span
+              >Sección "Diagnóstico Estratégico: Causas del Desempeño de Agosto"
+              actualmente oculta.</span
+            >
+          </div>
+          <button
+            type="button"
+            onclick="toggleStrategicSectionVisibility()"
+            class="ml-0 sm:ml-2 px-3 py-1 rounded-lg bg-white border border-slate-300 text-[#0061A8] hover:bg-slate-100 font-black cursor-pointer transition-colors shadow-2xs"
+          >
+            Restaurar Sección
+          </button>
+        </div>
+      </div>
+
+      <!-- 7. Diagnóstico Estratégico Detallado -->
+      <div
+        id="section-strategic-diagnosis"
+        class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-6"
+      >
+        <div
+          class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-amber-100 text-amber-900">
+                <i
+                  data-lucide="alert-triangle"
+                  class="w-4 h-4 text-[#0061A8]"
+                ></i>
+              </span>
+              <h2
+                class="text-lg sm:text-xl font-black text-slate-900 tracking-tight"
+              >
+                Diagnóstico Estratégico: Causas del Desempeño de Agosto
+              </h2>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+              Análisis causal e interpretación de brechas respecto a Julio para
+              <strong id="diag-client-name" class="text-slate-800"
+                >Consolidado General</strong
+              >
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Botón para Ocultar la Sección completa de Diagnóstico -->
+            <button
+              id="btn-toggle-strategic-section"
+              type="button"
+              onclick="toggleStrategicSectionVisibility()"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
+              title="Ocultar sección completa de diagnóstico estratégico"
+            >
+              <i data-lucide="eye-off" class="w-3.5 h-3.5 text-slate-500"></i>
+              <span>Ocultar Sección</span>
+            </button>
+            <!-- Toggle para ver u ocultar irrelevantes -->
+            <button
+              id="btn-toggle-hidden-strategic"
+              type="button"
+              onclick="toggleShowHiddenStrategic()"
+              class="hidden px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer items-center gap-1.5"
+              title="Alternar visibilidad de factores y recomendaciones marcados como irrelevantes"
+            >
+              <i data-lucide="eye" class="w-3.5 h-3.5 text-[#0061A8]"></i>
+              <span id="label-toggle-hidden-strategic">Ver Irrelevantes</span>
+            </button>
+
+            <!-- Botón de Agregar Factor -->
+            <button
+              id="btn-add-strategic-reason"
+              type="button"
+              onclick="openAddStrategicModal('reason')"
+              class="hidden px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all cursor-pointer items-center gap-1"
+              title="Agregar un factor causal personalizado para este cliente"
+            >
+              <i data-lucide="plus" class="w-3.5 h-3.5 text-[#0061A8]"></i>
+              <span>+ Factor</span>
+            </button>
+
+            <!-- Botón de Agregar Recomendación -->
+            <button
+              id="btn-add-strategic-rec"
+              type="button"
+              onclick="openAddStrategicModal('rec')"
+              class="hidden px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all cursor-pointer items-center gap-1"
+              title="Agregar una recomendación u acción inmediata para este cliente"
+            >
+              <i data-lucide="plus" class="w-3.5 h-3.5 text-[#E8B43B]"></i>
+              <span>+ Acción</span>
+            </button>
+
+            <!-- Botón de Restaurar Textos Originales -->
+            <button
+              id="btn-reset-strategic-all"
+              type="button"
+              onclick="resetStrategicItemsAll()"
+              class="hidden px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-semibold transition-all cursor-pointer items-center gap-1"
+              title="Restaurar factores y recomendaciones predeterminados"
+            >
+              <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+              <span class="hidden sm:inline">Restaurar</span>
+            </button>
+
+            <span
+              id="diag-net-breach-badge"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-extrabold text-xs border"
+            ></span>
+          </div>
+        </div>
+
+        <!-- Efecto Quincenal -->
+        <div>
+          <h3
+            class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3 flex items-center gap-1.5"
+          >
+            <i data-lucide="split" class="w-3.5 h-3.5 text-[#0061A8]"></i>
+            <span>El Efecto Quincena: ¿Dónde se originó el desfase?</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Q1 -->
+            <div id="q1-box" class="p-4 rounded-xl border">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-800"
+                  >1ra Quincena (Días 1 al 15)</span
+                >
+                <span
+                  id="q1-badge"
+                  class="text-2xs font-extrabold px-2 py-0.5 rounded-full"
+                ></span>
+              </div>
+              <div class="flex items-baseline justify-between text-xs mb-1">
+                <span class="text-slate-500"
+                  >Julio: <strong id="q1-jul-val">$0</strong></span
+                >
+                <span class="text-slate-900 font-bold"
+                  >Agosto: <strong id="q1-ago-val">$0</strong></span
+                >
+              </div>
+              <div
+                class="pt-2 border-t border-slate-200/60 flex items-center justify-between"
+              >
+                <span class="text-xs text-slate-600 font-semibold"
+                  >Variación Quincena 1:</span
+                >
+                <span id="q1-diff-val" class="text-sm font-black"></span>
+              </div>
+            </div>
+
+            <!-- Q2 -->
+            <div id="q2-box" class="p-4 rounded-xl border">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-800"
+                  >2da Quincena (Días 16 al 31)</span
+                >
+                <span
+                  id="q2-badge"
+                  class="text-2xs font-extrabold px-2 py-0.5 rounded-full"
+                ></span>
+              </div>
+              <div class="flex items-baseline justify-between text-xs mb-1">
+                <span class="text-slate-500"
+                  >Julio: <strong id="q2-jul-val">$0</strong></span
+                >
+                <span class="text-slate-900 font-bold"
+                  >Agosto: <strong id="q2-ago-val">$0</strong></span
+                >
+              </div>
+              <div
+                class="pt-2 border-t border-slate-200/60 flex items-center justify-between"
+              >
+                <span class="text-xs text-slate-600 font-semibold"
+                  >Variación Quincena 2:</span
+                >
+                <span id="q2-diff-val" class="text-sm font-black"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Factores Concretos -->
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <h3
+              class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
+            >
+              <i
+                data-lucide="calendar-x-2"
+                class="w-3.5 h-3.5 text-[#DC2626]"
+              ></i>
+              <span
+                >Factores Concretos que Influyeron de Manera Negativa /
+                Positiva:</span
+              >
+            </h3>
+            <span
+              id="reasons-count-badge"
+              class="text-3xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md"
+            ></span>
+          </div>
+          <div id="strategic-reasons" class="space-y-2.5"></div>
+        </div>
+
+        <!-- Recomendaciones -->
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <h3
+              class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
+            >
+              <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-[#E8B43B]"></i>
+              <span
+                >Acciones Inmediatas de Recuperación y Recomendaciones:</span
+              >
+            </h3>
+            <span
+              id="recs-count-badge"
+              class="text-3xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md"
+            ></span>
+          </div>
+          <div
+            id="strategic-recommendations"
+            class="grid grid-cols-1 md:grid-cols-2 gap-3"
+          ></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer Corporativo -->
+    <footer
+      class="bg-white border-t border-slate-200 py-5 text-center text-xs text-slate-500"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2"
+      >
+        <div class="flex items-center gap-2 font-medium">
+          <span class="w-2 h-2 rounded-full bg-[#E8B43B]"></span>
+          <span
+            >TEALCA • Inteligencia de Negocios y Diagnóstico, Area
+            Comercial.</span
+          >
+        </div>
+        <div class="text-3xs text-slate-400">
+          Julio vs Agosto 2026 • Colores oficiales Mostaza (#E8B43B) y Azul
+          (#0061A8)
+        </div>
+      </div>
+    </footer>
+
+    <!-- ==================== MODALES INTERACTIVOS ==================== -->
+
+    <!-- Modal 1: Modo Presentación PPT (Pantalla Completa Corporativa) -->
+    <div
+      id="modal-presentation"
+      class="fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-md hidden flex flex-col justify-between overflow-hidden text-slate-800"
+    >
+      <!-- Barra Superior de Control del Presentador -->
+      <div
+        class="bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-3 flex items-center justify-between text-white shrink-0"
+      >
+        <!-- Marca y Slide Activo -->
+        <div class="flex items-center gap-3">
+          <div
+            class="w-8 h-8 rounded-lg bg-[#0061A8] flex items-center justify-center text-[#E8B43B] font-extrabold text-sm border border-[#E8B43B]/60"
+          >
+            T
+          </div>
+          <div>
+            <span
+              class="text-xs font-bold text-[#E8B43B] uppercase tracking-wider block"
+            >
+              Modo Presentación PPT
+            </span>
+            <span
+              id="ppt-step-counter"
+              class="text-sm font-semibold text-slate-200"
+            >
+              Diapositiva 1 de 9
+            </span>
+          </div>
+        </div>
+
+        <!-- Selector de Métrica Interactivo durante la presentación -->
+        <div
+          class="hidden sm:flex items-center gap-2 bg-slate-800 p-1 rounded-xl border border-slate-700"
+        >
+          <button
+            id="ppt-metric-usd"
+            onclick="setPptMetric('usd')"
+            class="px-3 py-1 rounded-lg text-xs font-bold bg-[#0061A8] text-white shadow-xs transition-all cursor-pointer"
+          >
+            $ USD
+          </button>
+          <button
+            id="ppt-metric-guias"
+            onclick="setPptMetric('guias')"
+            class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer"
+          >
+            Guías
+          </button>
+          <button
+            id="ppt-metric-kg"
+            onclick="setPptMetric('kg')"
+            class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer"
+          >
+            Kilogramos
+          </button>
+        </div>
+
+        <!-- Botones de Navegación, Pantalla Completa y Salida -->
+        <div class="flex items-center gap-2">
+          <button
+            onclick="toggleFullscreen()"
+            class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition-colors cursor-pointer"
+            title="Pantalla completa (F11)"
+          >
+            <i data-lucide="maximize-2" class="w-5 h-5"></i>
+          </button>
+          <button
+            onclick="prevPptSlide()"
+            class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-white transition-colors cursor-pointer"
+            title="Diapositiva anterior (←)"
+          >
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          </button>
+          <button
+            onclick="nextPptSlide()"
+            class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-white transition-colors cursor-pointer"
+            title="Diapositiva siguiente (→ o Espacio)"
+          >
+            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+          </button>
+          <button
+            onclick="togglePresentation()"
+            class="p-2 rounded-lg bg-red-600/80 hover:bg-red-600 text-white transition-colors ml-2 cursor-pointer"
+            title="Salir de presentación (Esc)"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Lienzo Principal de la Diapositiva -->
+      <div
+        class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto flex items-center justify-center"
+      >
+        <div
+          id="ppt-slide-card"
+          class="w-full max-w-6xl bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 sm:p-8 lg:p-10 flex flex-col justify-between min-h-[600px] ppt-slide-card"
+        >
+          <div id="ppt-slide-content"></div>
+        </div>
+      </div>
+
+      <!-- Footer de la Diapositiva: Selector de Láminas y Progreso -->
+      <div
+        class="bg-slate-900 border-t border-slate-800 px-6 py-3 flex items-center justify-between text-white shrink-0"
+      >
+        <div id="ppt-dots-container" class="flex items-center gap-2"></div>
+        <div class="text-3xs text-slate-400 font-medium">
+          Usa las flechas
+          <kbd
+            class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700"
+            >←</kbd
+          >
+          <kbd
+            class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700"
+            >→</kbd
+          >
+          o
+          <kbd
+            class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700"
+            >Espacio</kbd
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 2: Tabla de Datos Detallada (492 filas completas) -->
+    <div
+      id="modal-table"
+      class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-3xl w-full max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col border border-slate-200"
+      >
+        <div
+          class="px-6 py-4 border-b border-slate-200 flex items-center justify-between"
+        >
+          <div>
+            <h3 class="font-black text-lg text-slate-900">
+              Base de Datos Operativa (Julio vs Agosto)
+            </h3>
+            <p class="text-xs text-slate-500">
+              492 registros diarios discriminados por cliente, día, semana y mes
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button
+              onclick="exportToCSV()"
+              class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer"
+            >
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Descargar CSV</span>
+            </button>
+            <button
+              onclick="closeTableModal()"
+              class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 cursor-pointer"
+            >
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="p-4 border-b border-slate-100 bg-slate-50 flex items-center gap-3"
+        >
+          <div class="relative flex-1">
+            <input
+              id="table-search"
+              type="text"
+              placeholder="Buscar por cliente, día, fecha..."
+              oninput="handleTableSearch(this.value)"
+              class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2 text-xs focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            />
+          </div>
+          <span
+            id="table-count"
+            class="text-xs font-bold text-slate-600 whitespace-nowrap"
+            >492 registros</span
+          >
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4">
+          <table class="w-full text-xs text-left">
+            <thead
+              class="bg-slate-100 text-slate-700 font-black sticky top-0 uppercase tracking-wider text-3xs"
+            >
+              <tr>
+                <th class="p-2.5">Mes</th>
+                <th class="p-2.5">Semana</th>
+                <th class="p-2.5">Día</th>
+                <th class="p-2.5">Fecha</th>
+                <th class="p-2.5">Cliente</th>
+                <th class="p-2.5 text-right">Facturación USD</th>
+                <th class="p-2.5 text-right">Guías</th>
+                <th class="p-2.5 text-right">Kilogramos</th>
+              </tr>
+            </thead>
+            <tbody
+              id="raw-table-body"
+              class="divide-y divide-slate-100 font-medium text-slate-700"
+            ></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 3: Importador de Datos (TSV / CSV de Google Sheets) -->
+    <div
+      id="modal-importer"
+      class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl p-6 border border-slate-200 space-y-4"
+      >
+        <div class="flex items-center justify-between border-b pb-3">
+          <div class="flex items-center gap-2">
+            <span class="p-2 rounded-xl bg-blue-50 text-[#0061A8]">
+              <i data-lucide="upload" class="w-5 h-5"></i>
+            </span>
+            <div>
+              <h3 class="font-black text-base text-slate-900">
+                Actualizar Datos desde Google Sheets
+              </h3>
+              <p class="text-xs text-slate-500">
+                Copia y pega las celdas directamente de tu hoja de cálculo
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeImporterModal()"
+            class="text-slate-400 hover:text-slate-700 cursor-pointer"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Banner de Bloqueo si no está autenticado -->
+        <div
+          id="importer-lock-banner"
+          class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center justify-between text-xs text-amber-900 font-medium"
+        >
+          <div class="flex items-center gap-2">
+            <i
+              data-lucide="alert-circle"
+              class="w-4 h-4 text-amber-600 shrink-0"
+            ></i>
+            <span
+              >Proyecto Bloqueado. Para importar o aplicar datos necesitas
+              identificarte con Eduardo.oso.</span
+            >
+          </div>
+          <button
+            type="button"
+            onclick="
+              handleAuthClick(
+                'Debes estar desbloqueado con Eduardo.oso para actualizar o pegar datos desde Google Sheets.',
+              )
+            "
+            class="px-2.5 py-1 rounded-lg bg-white border border-amber-300 text-[#0061A8] font-bold text-3xs hover:bg-amber-100 cursor-pointer"
+          >
+            Desbloquear
+          </button>
+        </div>
+
+        <div
+          class="text-2xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200"
+        >
+          <strong>Formato Requerido de Columnas:</strong><br />
+          <code
+            >MES | SEMANA | DIA | FECHA | CLIENTE | FACTURACION USD | GUIAS |
+            KILOGRAMOS</code
+          >
+        </div>
+
+        <textarea
+          id="import-textarea"
+          rows="8"
+          placeholder="Pega aquí los datos copiados de Google Sheets (TSV)..."
+          class="w-full font-mono text-2xs p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+        ></textarea>
+
+        <div class="flex items-center justify-between pt-2">
+          <button
+            onclick="loadSampleData()"
+            class="text-xs font-bold text-[#0061A8] hover:underline cursor-pointer"
+          >
+            Cargar Datos Oficiales por Defecto
+          </button>
+          <div class="flex items-center gap-2">
+            <button
+              onclick="closeImporterModal()"
+              class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 cursor-pointer"
+            >
+              Cancelar
+            </button>
+            <button
+              onclick="processDataImport()"
+              class="px-4 py-2 rounded-xl bg-[#0061A8] text-white text-xs font-black shadow-xs hover:bg-[#004C84] cursor-pointer"
+            >
+              Procesar e Importar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 4: Autenticación y Desbloqueo (Eduardo.oso / 20870092) -->
+    <div
+      id="auth-modal"
+      class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-200 animate-scale-in"
+      >
+        <div class="bg-[#0061A8] text-white p-6 relative">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-2xl bg-[#E8B43B] flex items-center justify-center text-slate-950"
+            >
+              <i data-lucide="lock" class="w-5 h-5 text-slate-950"></i>
+            </div>
+            <div>
+              <h3 class="font-black text-lg text-white">
+                Desbloqueo de Proyecto
+              </h3>
+              <p class="text-xs text-blue-100">
+                Acceso exclusivo para edición y gestión
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeAuthModal()"
+            class="absolute top-5 right-5 text-white/80 hover:text-white cursor-pointer"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div
+          id="auth-custom-notice"
+          class="hidden bg-amber-50 border-b border-amber-200 p-3.5 text-xs text-amber-900 font-medium flex items-center gap-2"
+        >
+          <i
+            data-lucide="shield-alert"
+            class="w-4 h-4 text-[#D97706] shrink-0"
+          ></i>
+          <span id="auth-custom-notice-text"></span>
+        </div>
+
+        <form
+          onsubmit="handleAuthSubmit(event)"
+          autocomplete="off"
+          class="p-6 space-y-4"
+        >
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Usuario Autorizado</label
+            >
+            <input
+              id="auth-input-user"
+              type="text"
+              required
+              placeholder="Eduardo.oso"
+              autocomplete="off"
+              class="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Contraseña</label
+            >
+            <input
+              id="auth-input-pass"
+              type="password"
+              required
+              placeholder="••••••••"
+              autocomplete="off"
+              class="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            />
+          </div>
+
+          <div
+            id="auth-error-msg"
+            class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 font-bold"
+          >
+            Credenciales incorrectas. Verifique el usuario y la contraseña
+            (Usuario: Eduardo.oso / Contraseña: 20870092).
+          </div>
+
+          <div class="pt-2 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onclick="closeAuthModal()"
+              class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              id="btn-submit-auth"
+              class="px-4 py-2 rounded-xl bg-[#0061A8] hover:bg-[#004C84] text-white text-xs font-black shadow-xs cursor-pointer"
+            >
+              Desbloquear Ahora
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 5: Agregar Nuevo Factor Externo -->
+    <div
+      id="modal-add-event"
+      class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 border border-slate-200 space-y-4"
+      >
+        <div class="flex items-center justify-between border-b pb-3">
+          <div class="flex items-center gap-2">
+            <div
+              class="w-8 h-8 rounded-xl bg-blue-50 text-[#0061A8] flex items-center justify-center"
+            >
+              <i data-lucide="plus" class="w-4 h-4 text-[#0061A8]"></i>
+            </div>
+            <div>
+              <h3 class="font-black text-base text-slate-900">
+                Registrar Factor de Contexto
+              </h3>
+              <p class="text-xs text-slate-500">
+                Asocia un evento externo con la tendencia del cliente
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeAddEventModal()"
+            class="text-slate-400 hover:text-slate-700 cursor-pointer"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <form onsubmit="handleSaveCustomEvent(event)" class="space-y-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Título del Evento / Contexto</label
+            >
+            <input
+              id="input-evt-title"
+              type="text"
+              required
+              placeholder="Ej: Inactividad por corte de suministro eléctrico..."
+              class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1"
+                >Período / Fecha</label
+              >
+              <input
+                id="input-evt-date"
+                type="text"
+                placeholder="Ej: 15 al 18 Agosto"
+                class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1"
+                >Categoría</label
+              >
+              <select
+                id="select-evt-cat"
+                class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+              >
+                <option value="externo">Factor Político / Entorno</option>
+                <option value="operativo">Operativo / Infraestructura</option>
+                <option value="comercial">Feriado / Calendario</option>
+                <option value="cliente">Comportamiento del Cliente</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Impacto Estimado</label
+            >
+            <select
+              id="select-evt-impact"
+              class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            >
+              <option value="Negativo Severo">
+                Negativo Severo (Frenazo Operativo)
+              </option>
+              <option value="Negativo Moderado">
+                Negativo Moderado (Retrasos Puntuales)
+              </option>
+              <option value="Positivo / Repunte">
+                Positivo / Repunte (Aceleración de Entregas)
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Descripción y Hallazgo</label
+            >
+            <textarea
+              id="input-evt-desc"
+              rows="3"
+              placeholder="Explica cómo afectó la facturación o la capacidad física de despacho..."
+              class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            ></textarea>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onclick="closeAddEventModal()"
+              class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 cursor-pointer"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 rounded-xl bg-[#0061A8] text-white text-xs font-black shadow-xs hover:bg-[#004C84] cursor-pointer"
+            >
+              Guardar Evento
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 6: Editar Factor Externo Existente -->
+    <div
+      id="modal-edit-factor"
+      class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 border border-slate-200 space-y-4"
+      >
+        <div class="flex items-center justify-between border-b pb-3">
+          <div class="flex items-center gap-2">
+            <div
+              class="w-8 h-8 rounded-xl bg-blue-50 text-[#0061A8] flex items-center justify-center"
+            >
+              <i data-lucide="edit-3" class="w-4 h-4 text-[#0061A8]"></i>
+            </div>
+            <div>
+              <h3 class="font-black text-base text-slate-900">
+                Editar Factor de Mercado
+              </h3>
+              <p class="text-xs text-slate-500">
+                Ajusta el relato según tu análisis directivo
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeEditFactorModal()"
+            class="text-slate-400 hover:text-slate-700 cursor-pointer"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <form onsubmit="handleSaveEditFactor(event)" class="space-y-3.5">
+          <input type="hidden" id="edit-factor-id" />
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Título</label
+            >
+            <input
+              id="edit-factor-title"
+              type="text"
+              required
+              class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1"
+                >Período / Fecha</label
+              >
+              <input
+                id="edit-factor-date"
+                type="text"
+                class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1"
+                >Categoría</label
+              >
+              <input
+                id="edit-factor-cat"
+                type="text"
+                class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Impacto</label
+            >
+            <input
+              id="edit-factor-impact"
+              type="text"
+              class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Descripción</label
+            >
+            <textarea
+              id="edit-factor-desc"
+              rows="3"
+              class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            ></textarea>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onclick="closeEditFactorModal()"
+              class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 cursor-pointer"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 rounded-xl bg-[#0061A8] text-white text-xs font-black shadow-xs hover:bg-[#004C84] cursor-pointer"
+            >
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 7: Editar Hipótesis Cuantitativa y 5 Porqués -->
+    <div
+      id="modal-edit-hypothesis"
+      class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-3xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 border border-slate-200 space-y-4"
+      >
+        <div class="flex items-center justify-between border-b pb-3">
+          <div class="flex items-center gap-2">
+            <div
+              class="w-8 h-8 rounded-xl bg-blue-50 text-[#0061A8] flex items-center justify-center"
+            >
+              <i data-lucide="edit-3" class="w-4 h-4 text-[#0061A8]"></i>
+            </div>
+            <div>
+              <h3 class="font-black text-base text-slate-900">
+                Editar Hipótesis y Árbol Causal
+              </h3>
+              <p class="text-xs text-slate-500">
+                Personaliza la cadena de los 5 Porqués y la acción correctiva
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeEditHypothesisModal()"
+            class="text-slate-400 hover:text-slate-700 cursor-pointer"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <form onsubmit="handleSaveEditHypothesis(event)" class="space-y-3.5">
+          <input type="hidden" id="edit-hyp-id" />
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Título de la Hipótesis</label
+            >
+            <input
+              id="edit-hyp-title"
+              type="text"
+              required
+              class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1"
+                >Nivel de Evidencia</label
+              >
+              <input
+                id="edit-hyp-evidence"
+                type="text"
+                class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1"
+                >Impacto Numérico en USD</label
+              >
+              <input
+                id="edit-hyp-impact"
+                type="number"
+                step="1"
+                class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Evidencia Directa de Datos</label
+            >
+            <textarea
+              id="edit-hyp-dataproof"
+              rows="2"
+              class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            ></textarea>
+          </div>
+
+          <div class="space-y-2 border-t pt-3">
+            <label
+              class="block text-xs font-black text-[#0061A8] uppercase tracking-wider"
+              >Secuencia de los 5 Porqués (Cadena Causal)</label
+            >
+            <input
+              id="edit-hyp-why-1"
+              type="text"
+              placeholder="1. ¿Por qué...? "
+              class="w-full text-xs px-3 py-1.5 rounded-lg border border-slate-300"
+            />
+            <input
+              id="edit-hyp-why-2"
+              type="text"
+              placeholder="2. ¿Por qué...? "
+              class="w-full text-xs px-3 py-1.5 rounded-lg border border-slate-300"
+            />
+            <input
+              id="edit-hyp-why-3"
+              type="text"
+              placeholder="3. ¿Por qué...? "
+              class="w-full text-xs px-3 py-1.5 rounded-lg border border-slate-300"
+            />
+            <input
+              id="edit-hyp-why-4"
+              type="text"
+              placeholder="4. ¿Por qué...? "
+              class="w-full text-xs px-3 py-1.5 rounded-lg border border-slate-300"
+            />
+            <input
+              id="edit-hyp-why-5"
+              type="text"
+              placeholder="★ Causa Raíz Sistémica... "
+              class="w-full text-xs px-3 py-1.5 rounded-lg border border-[#E8B43B] bg-amber-50/50 font-bold"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Acción de Mitigación / Solución</label
+            >
+            <textarea
+              id="edit-hyp-mitigation"
+              rows="2"
+              class="w-full text-xs px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none"
+            ></textarea>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onclick="closeEditHypothesisModal()"
+              class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 cursor-pointer"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 rounded-xl bg-[#0061A8] text-white text-xs font-black shadow-xs hover:bg-[#004C84] cursor-pointer"
+            >
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 8: Editar Elemento de Diagnóstico Estratégico (Causa o Recomendación) -->
+    <div
+      id="modal-edit-strategic-item"
+      class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 border border-slate-200 space-y-4"
+      >
+        <div class="flex items-center justify-between border-b pb-3">
+          <div class="flex items-center gap-2">
+            <div
+              class="w-8 h-8 rounded-xl bg-blue-50 text-[#0061A8] flex items-center justify-center"
+            >
+              <i data-lucide="edit-3" class="w-4 h-4 text-[#0061A8]"></i>
+            </div>
+            <div>
+              <h3
+                id="modal-edit-strategic-title"
+                class="font-black text-base text-slate-900"
+              >
+                Editar Diagnóstico Estratégico
+              </h3>
+              <p
+                id="modal-edit-strategic-subtitle"
+                class="text-xs text-slate-500"
+              >
+                Personaliza la redacción del factor o recomendación
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeEditStrategicModal()"
+            class="text-slate-400 hover:text-slate-700 cursor-pointer"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <form onsubmit="handleSaveEditStrategic(event)" class="space-y-3.5">
+          <input type="hidden" id="edit-strat-type" />
+          <input type="hidden" id="edit-strat-id" />
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Texto del Factor / Recomendación</label
+            >
+            <textarea
+              id="edit-strat-text"
+              rows="5"
+              required
+              class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none leading-relaxed"
+            ></textarea>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onclick="closeEditStrategicModal()"
+              class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 cursor-pointer hover:bg-slate-50"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 rounded-xl bg-[#0061A8] text-white text-xs font-black shadow-xs hover:bg-[#004C84] cursor-pointer"
+            >
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal 9: Agregar Nuevo Elemento al Diagnóstico Estratégico -->
+    <div
+      id="modal-add-strategic-item"
+      class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl p-6 border border-slate-200 space-y-4"
+      >
+        <div class="flex items-center justify-between border-b pb-3">
+          <div class="flex items-center gap-2">
+            <div
+              class="w-8 h-8 rounded-xl bg-blue-50 text-[#0061A8] flex items-center justify-center"
+            >
+              <i data-lucide="plus" class="w-4 h-4 text-[#0061A8]"></i>
+            </div>
+            <div>
+              <h3
+                id="modal-add-strategic-title"
+                class="font-black text-base text-slate-900"
+              >
+                Agregar al Diagnóstico
+              </h3>
+              <p
+                id="modal-add-strategic-subtitle"
+                class="text-xs text-slate-500"
+              >
+                Incorpora un nuevo punto analítico
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeAddStrategicModal()"
+            class="text-slate-400 hover:text-slate-700 cursor-pointer"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <form onsubmit="handleSaveAddStrategic(event)" class="space-y-3.5">
+          <input type="hidden" id="add-strat-type" />
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Descripción Detallada</label
+            >
+            <textarea
+              id="add-strat-text"
+              rows="4"
+              required
+              placeholder="Escribe aquí el hallazgo causal o la acción recomendada..."
+              class="w-full text-xs p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#0061A8] focus:outline-none leading-relaxed"
+            ></textarea>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onclick="closeAddStrategicModal()"
+              class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 cursor-pointer hover:bg-slate-50"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 rounded-xl bg-[#0061A8] text-white text-xs font-black shadow-xs hover:bg-[#004C84] cursor-pointer"
+            >
+              Agregar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tooltip flotante interactivo para gráficos Donut y semanas -->
+    <div
+      id="donut-hover-tooltip"
+      class="fixed pointer-events-none z-50 hidden bg-slate-950/95 backdrop-blur-md text-white p-3.5 rounded-xl shadow-2xl border border-slate-700/80 text-xs transition-opacity duration-100 max-w-xs"
+    ></div>
+
+    <!-- SCRIPTS INDEPENDIENTES VINCULADOS -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

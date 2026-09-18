@@ -1,0 +1,172 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ * 
+ * TEALCA • Inteligencia de Negocios y Diagnóstico, Area Comercial.
+ * Estilos Corporativos Oficiales para la réplica en la carpeta /public
+ * 
+ * Paleta Corporativa:
+ * - Mostaza Corporativo: #E8B43B
+ * - Azul Corporativo: #0061A8
+ * - Fondo Principal: Blanco (#FFFFFF) y Gris Neutro (#F8FAFC)
+ * - Positivo / Superávit: Azul (#0061A8)
+ * - Negativo / Déficit: Rojo (#DC2626)
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap");
+
+:root {
+  --tealca-blue: #0061a8;
+  --tealca-blue-hover: #004c84;
+  --tealca-blue-light: #e6f0f8;
+  --tealca-mustard: #e8b43b;
+  --tealca-mustard-hover: #d49b25;
+  --tealca-mustard-light: #fef7e6;
+  --tealca-red: #dc2626;
+  --tealca-red-light: #fee2e2;
+}
+
+body {
+  font-family:
+    "Plus Jakarta Sans",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Clases de Identidad Corporativa */
+.brand-blue {
+  color: var(--tealca-blue);
+}
+
+.bg-brand-blue {
+  background-color: var(--tealca-blue);
+}
+
+.brand-mustard {
+  color: var(--tealca-mustard);
+}
+
+.bg-brand-mustard {
+  background-color: var(--tealca-mustard);
+}
+
+/* Clases Semánticas para Variaciones y Deltas */
+.text-pos {
+  color: var(--tealca-blue) !important;
+}
+
+.text-neg {
+  color: var(--tealca-red) !important;
+}
+
+.bg-pos {
+  background-color: var(--tealca-blue-light) !important;
+  color: var(--tealca-blue) !important;
+}
+
+.bg-neg {
+  background-color: var(--tealca-red-light) !important;
+  color: var(--tealca-red) !important;
+}
+
+/* Bordes y Sombras Suaves */
+.card-shadow {
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.05),
+    0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+.card-shadow-hover {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-shadow-hover:hover {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.07),
+    0 2px 4px -2px rgba(0, 0, 0, 0.07);
+  border-color: rgba(0, 97, 168, 0.3);
+}
+
+/* Transiciones de Gráficos SVG */
+.donut-slice {
+  transition:
+    opacity 0.2s ease,
+    stroke-width 0.2s ease;
+}
+
+.donut-slice:hover {
+  opacity: 1 !important;
+}
+
+/* Scrollbar Personalizado */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Animaciones Modales y Tooltips */
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Fallback de Pantalla Completa para entornos con iframe */
+body.fullscreen-mode {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999 !important;
+  overflow-y: auto !important;
+  background-color: #f8fafc !important;
+}
+
+.ppt-slide-card {
+  animation: pptSlideIn 0.22s ease-out forwards;
+}
+
+@keyframes pptSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  }
+}
