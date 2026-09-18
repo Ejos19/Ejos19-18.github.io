@@ -1550,13 +1550,13 @@ function getRootCauseHypotheses(selectedClient, analysis) {
       evidence: "Alta (Comprobada por Datos)",
       whys: [
         "1. ¿Por qué cayó la facturación más que las guías? -> Porque el tonelaje total facturado se redujo sensiblemente.",
-        "2. ¿Por qué cayó el peso promedio por paquete? -> Los clientes enviaron mayor proporción de sobres y repuestos pequeños en lugar de bultos pesados.",
+        "2. ¿Por qué cayó el peso promedio por paquete? -> Los clientes enviaron mayor proporción de bultos pesados en lugar de sobres y repuestos pequeños.",
 
         "3. ¿Por qué el cliente no envió carga pesada en Agosto? -> Postergación de compras industriales pesadas hacia meses de mayor actividad económica.",
-        "★ Causa Raíz Sistémica -> Dependencia de una estructura tarifaria lineal indexada al peso bruto sin tarifas escalonadas para paquetería express.",
+        "★ Causa Raíz Sistémica -> El 71% de la carga movilizada en el mes Agosto, han sido carga pesada.",
       ],
       action:
-        "Crear esquema de fidelización con tarifas de conveniencia para bultos pesados (+15 kg) y acuerdos de volumen mínimo mensual garantizado.",
+        "Implementar un recargo para bultos mayores a 25 kg. menor introducción de carga pesada masiva en las unidades.",
     });
   }
 
