@@ -1551,8 +1551,8 @@ function getRootCauseHypotheses(selectedClient, analysis) {
       whys: [
         "1. ¿Por qué cayó la facturación más que las guías? -> Porque el tonelaje total facturado se redujo sensiblemente.",
         "2. ¿Por qué cayó el peso promedio por paquete? -> Los clientes enviaron mayor proporción de sobres y repuestos pequeños en lugar de bultos pesados.",
-        "3. ¿Cómo impacta esto en los ingresos de TEALCA? -> La tarifa base mínima cubre hasta cierto peso; la rentabilidad proviene de los kilos excedentes facturados.",
-        "4. ¿Por qué el cliente no envió carga pesada en Agosto? -> Postergación de compras industriales pesadas hacia meses de mayor actividad económica.",
+
+        "3. ¿Por qué el cliente no envió carga pesada en Agosto? -> Postergación de compras industriales pesadas hacia meses de mayor actividad económica.",
         "★ Causa Raíz Sistémica -> Dependencia de una estructura tarifaria lineal indexada al peso bruto sin tarifas escalonadas para paquetería express.",
       ],
       action:
@@ -1583,7 +1583,7 @@ function getRootCauseHypotheses(selectedClient, analysis) {
       "1. ¿El mercado o cliente abandonó el servicio en Agosto? -> No, en la 2da Quincena se igualó e incluso superó el nivel de Julio.",
       "2. ¿Por qué se concentró tanto volumen al final? -> Necesidad de cerrar metas comerciales de fin de mes y acumulación de pedidos pendientes.",
       "3. ¿Qué consecuencia operativa genera? -> Sobrecarga en sucursales y rutas en los últimos días hábiles, mientras que la 1ra quincena hubo capacidad ociosa.",
-      "4. ¿Por qué el cliente no dosifica sus envíos? -> Ciclos de cobro y crédito comercial quincenal que condicionan la liberación de mercancía.",
+
       "★ Causa Raíz Sistémica -> Ausencia de incentivos para el aplanamiento de la curva de despachos (flete nivelado a lo largo del mes).",
     ],
     action:
@@ -2351,10 +2351,7 @@ function diagnoseClientReasons(clientName, analysis, q1Diff, q2Diff) {
       "Establecer alertas operativas tempranas en la primera semana del mes para activar despachos retenidos.",
     );
     recs.push(
-      "Revisar política de tarifas por peso mínimo para evitar que una mayor cantidad de guías livianas reduzca la rentabilidad neta.",
-    );
-    recs.push(
-      "Ofrecer esquemas de flete plano para repuestos agrícolas pesados que incentive despachos de mayor volumen unitario.",
+      "Revisar política de tarifas por peso mínimo y maximo, un equilibrio de ambas, para evitar que una mayor cantidad de guías pesadas reduzca la rentabilidad neta.",
     );
   } else if (clientName === "Biopago C.A.") {
     reasons.push(
@@ -2394,7 +2391,7 @@ function diagnoseClientReasons(clientName, analysis, q1Diff, q2Diff) {
       "Indagar directamente con la clienta el motivo de la caída de pedidos a mediados de mes (Semana 3).",
     );
     recs.push(
-      "Ofrecer incentivos por volumen consolidado semanal para evitar semanas valles.",
+      "Ofrecer incentivos por volumen semanal para evitar semanas valles.",
     );
     recs.push(
       "Presentar convenio con tarifa preferencial en temporadas de alta reposición comercial.",
@@ -2428,10 +2425,10 @@ function diagnoseClientReasons(clientName, analysis, q1Diff, q2Diff) {
       "Semana 1 desértica: La Semana 1 de Agosto solo facturó $431 USD vs $4,938 USD en Julio (-$4,507 USD, -91.3%). El desfase de calendario y arranque tardío de envíos fue el principal detonante negativo.",
     );
     reasons.push(
-      "Fuerte resiliencia en la segunda mitad: En la 2da Quincena, Agosto facturó $16,010 USD superando los $15,970 USD de Julio (+0.3%), confirmando que la demanda comercial no se perdió, sino que se retrasó.",
+      "Fuerte resiliencia en la segunda mitad: En la 2da Quincena, Agosto recupera particiapacion facturó $15,524 USD vs $16,639 USD de Julio (-7%), confirmando que la demanda comercial no se perdió, sino que se retrasó.",
     );
     reasons.push(
-      "Reducción de carga pesada global: El total de kilogramos movilizados cayó un 20.7% (-1,605 kg), liderado por la contracción de 974 kg en Estefany Reinoso y 514 kg en Todo Tractor.",
+      "Reducción de carga: El total de kilogramos movilizados cayó un 20.7% (-1,605 kg), liderado por la contracción de 974 kg en Estefany Reinoso y 514 kg en Todo Tractor.",
     );
 
     recs.push(
@@ -2441,7 +2438,7 @@ function diagnoseClientReasons(clientName, analysis, q1Diff, q2Diff) {
       "Establecer metas comerciales semanales para la fuerza de ventas con el fin de evitar la desaceleración de la primera quincena.",
     );
     recs.push(
-      "Desarrollar tarifas por escala de peso que premien el envío de carga consolidada pesada (+15 kg).",
+      "Diseñar un esquema de indexación o recargo operativo para envíos que superen los 25 kg, asegurando que la carga pesada cubra el costo operativo sin canibalizar el espacio de la mercancía de alto margen.",
     );
     recs.push(
       "Formalizar acuerdos de retiro diario programado con clientes corporativos para nivelar la curva logística mensual.",
