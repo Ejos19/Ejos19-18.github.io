@@ -1553,7 +1553,7 @@ function getRootCauseHypotheses(selectedClient, analysis) {
         "2. ¿Por qué cayó el peso promedio por paquete? -> Los clientes enviaron mayor proporción de bultos pesados en lugar de sobres y repuestos pequeños.",
 
         "3. ¿Por qué el cliente no envió carga pesada en Agosto? -> Postergación de compras industriales pesadas hacia meses de mayor actividad económica.",
-        "★ Causa Raíz Sistémica -> El 71% de la carga movilizada en el mes Agosto, han sido carga pesada.",
+        "★ Causa Raíz Sistémica -> El 71% de la carga movilizada en el mes Agosto, ha sido carga pesada.",
       ],
       action:
         "Implementar un recargo para bultos mayores a 25 kg. menor introducción de carga pesada masiva en las unidades.",
