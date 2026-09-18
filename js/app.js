@@ -1,5 +1,5 @@
 /**
- * @license
+ * @licensee
  * SPDX-License-Identifier: Apache-2.0
  *
  * TEALCA • Inteligencia de Negocios y Diagnóstico, Area Comercial.
